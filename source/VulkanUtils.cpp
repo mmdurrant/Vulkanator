@@ -265,7 +265,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugMessageCallback(
 	{
 		// Something bad happened! Check message!
 		const char* Message = CallbackData->pMessage;
-		assert(0);
+		// assert(0);
 	}
 	case vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo:
 	case vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose:

@@ -1645,7 +1645,7 @@ PF_Err SmartRender(
 			// sampled from
 			Cmd.pipelineBarrier(
 				vk::PipelineStageFlagBits::eTransfer,
-				vk::PipelineStageFlagBits::eComputeShader,
+				vk::PipelineStageFlagBits::eFragmentShader,
 				vk::DependencyFlags(), {}, {},
 				{// Input Image is going to be read
 				 vk::ImageMemoryBarrier(
@@ -1666,7 +1666,7 @@ PF_Err SmartRender(
 		// sampled from
 		Cmd.pipelineBarrier(
 			vk::PipelineStageFlagBits::eTransfer,
-			vk::PipelineStageFlagBits::eComputeShader, vk::DependencyFlags(),
+			vk::PipelineStageFlagBits::eFragmentShader, vk::DependencyFlags(),
 			{}, {},
 			{// Output Image is going to be written to as a color attachment
 			 // within a render pass
@@ -1685,31 +1685,31 @@ PF_Err SmartRender(
 		//////// RENDERING COMMANDS HERE
 
 		// Begin Render Pass
-		vk::RenderPassBeginInfo BeginInfo = {};
+		vk::RenderPassBeginInfo renderPassBegin = {};
 		// Assign our render pass, based on depth
-		BeginInfo.renderPass
+		renderPassBegin.renderPass
 			= GlobalParam->RenderPasses[FrameParam->Uniforms.Depth].get();
 
 		// Assign our output framebuffer, which has 1 color attachment
-		BeginInfo.framebuffer = OutputFramebuffer.get();
+		renderPassBegin.framebuffer = OutputFramebuffer.get();
 
 		// Rectangular region of the output buffer to render into
 		// TODO: we could potentially have a cached layer-sized output
 		// image, and only render into a subset of this image using
 		// extent_hint if we wanted to. But we use the exact output size for
 		// more immediate memory savings
-		BeginInfo.renderArea.offset.x = BeginInfo.renderArea.offset.y = 0;
-		BeginInfo.renderArea.extent.width  = std::uint32_t(OutputLayer->width);
-		BeginInfo.renderArea.extent.height = std::uint32_t(OutputLayer->height);
+		renderPassBegin.renderArea.offset.x = renderPassBegin.renderArea.offset.y = 0;
+		renderPassBegin.renderArea.extent.width  = std::uint32_t(OutputLayer->width);
+		renderPassBegin.renderArea.extent.height = std::uint32_t(OutputLayer->height);
 
 		// This is the color that we clear the framebuffer with
 		// Default clear value is just "0" through out
 		static vk::ClearValue ClearValue = {};
-		BeginInfo.clearValueCount        = 1;
-		BeginInfo.pClearValues           = &ClearValue;
+		renderPassBegin.clearValueCount        = 1;
+		renderPassBegin.pClearValues           = &ClearValue;
 
 		////////////// Render pass begin
-		Cmd.beginRenderPass(BeginInfo, vk::SubpassContents::eInline);
+		Cmd.beginRenderPass(renderPassBegin, vk::SubpassContents::eInline);
 
 		// Render pass commands here!!!
 		// Bind our shader
